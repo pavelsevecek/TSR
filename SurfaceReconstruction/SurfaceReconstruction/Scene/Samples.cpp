@@ -207,6 +207,22 @@ uint32 Samples::addSamplesViaCloud(PlyFile &file, const Path &fileName, const Ve
 	return (totalCount - oldSampleCount);
 }
 
+void Samples::addSamples(const std::vector<Math::Vector3>& normals,
+                         const std::vector<Math::Vector3>& positions,
+                         const std::vector<float>& scales)
+{
+    updateMaxCamerasPerSample(1);
+
+    for (uint32 i = 0; i < positions.size(); ++i)
+    {
+        addSample(Math::Vector3(0,0,0), normals[i], positions[i], 1.e6f, scales[i], &i, 1);
+    }
+
+    check();
+    computeValidParentCameraCount();
+    computeAABB();
+}
+
 void Samples::readSampleProperty(PlyFile &file, const uint32 sampleIdx,
 	const ElementsDescription::TYPES type, const VerticesDescription::SEMANTICS semantic)
 {

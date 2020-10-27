@@ -48,8 +48,8 @@ endif (OPENMP_FOUND)
 
 # projects
 subdirs(
-	SurfaceKernelColoring
+    #SurfaceKernelColoring
 	SurfaceReconstruction
-	SyntheticSceneEvaluation
-	App
+    #	SyntheticSceneEvaluation
+        App
 )

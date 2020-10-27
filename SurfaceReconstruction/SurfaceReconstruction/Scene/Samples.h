@@ -52,6 +52,8 @@ namespace SurfaceReconstruction
 		void addSamplesViaMeshes(const std::vector<FlexibleMesh *> &meshes,
 			const std::vector<std::vector<uint32> *> &cameraIndices, const std::vector<uint32> &camerasPerSamples);
 
+        void addSamples(const std::vector<Math::Vector3>& normals, const std::vector<Math::Vector3> &positions, const std::vector<float>& scales);
+
 		/** Checks whether sample properties look valid. */
 		void check() const;
 		

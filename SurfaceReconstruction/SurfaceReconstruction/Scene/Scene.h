@@ -57,6 +57,9 @@ namespace SurfaceReconstruction
 		Scene(const Storage::Path &rootFolder, const Storage::Path &FSSFReconstruction,
 			const std::vector<IReconstructorObserver *> &observers);
 
+        /** Creates an empty scene with a default name.*/
+        Scene(const std::vector<IReconstructorObserver *> &observers);
+
 		/** Frees all scene data, such as views. */
 		virtual ~Scene();
 
@@ -127,15 +130,16 @@ namespace SurfaceReconstruction
 		virtual bool onNewReconstruction(FlexibleMesh *mesh,
 			const uint32 iteration, const std::string &text, const ReconstructionType type, const bool responsible);
 
+        /** Creates an FSSRefiner with the latest reconstruction as input mesh. */
+        void createFSSFRefiner();
+
 	protected:
-		/** Creates an empty scene with a default name.*/
-		Scene(const std::vector<IReconstructorObserver *> &observers);
+
 
 		/** Frees allocated memory and sets pointers to NULL. */
 		void clear();
 
-		/** Creates an FSSRefiner with the latest reconstruction as input mesh. */
-		void createFSSFRefiner();
+
 
 		/** Gets synthetic scene description from a parameters file.
 		@param fileName Describes where to create the scene, what data to load, how to create the scene, etc.*/
@@ -189,7 +193,9 @@ namespace SurfaceReconstruction
 
 		// intermediate representations & data structures
 		FSSFRefiner *mFSSFRefiner;			/// Does variational surface mesh refinement starting with an initial mesh to get a reconstruction which "fits to" input images (high photo consistency score).
-		Occupancy *mOccupancy;				/// Represents how empty and full the space is.
+
+    public:
+        Occupancy *mOccupancy;				/// Represents how empty and full the space is.
 		PCSRefiner *mPCSRefiner;			/// Refines a coarse extracted crust to fit to the scene input samples.
 		Tree *mTree;						/// This tree partitions this scene spatially and defines sampling positions for the implicit function used for reconstruction.
 		

@@ -383,8 +383,10 @@ void Mesh::saveToFile(const Path &fileNameBeginning, const bool saveAsPly, const
 	const uint32 indexCount = getIndexCount();
 
 	// is there anything to save?
-	if (0 == vertexCount || 0 == indexCount)
+    if (0 == vertexCount || 0 == indexCount) {
+        cout << "Skipping empty mesh" << endl;
 		return;
+    }
 	
 	// save the reconstruction in the internal and or in the ply file format
 
@@ -394,9 +396,9 @@ void Mesh::saveToFile(const Path &fileNameBeginning, const bool saveAsPly, const
 		const Path fileName = Path::extendLeafName(fileNameBeginning, FileNaming::ENDING_PLY);
 		cout << "Saving " << fileName << "\n";
 
-		PlyFile file(fileName, File::CREATE_WRITING, true);
-		file.saveTriangleMesh(ENCODING_BINARY_LITTLE_ENDIAN, true,
-			vertexCount, indexCount, getColors(), getNormals(), getPositions(),
+        PlyFile file(fileName, File::CREATE_WRITING, false);
+        file.saveTriangleMesh(ENCODING_ASCII, true,
+            vertexCount, indexCount, NULL, getNormals(), getPositions(),
 			NULL, getScales(), NULL, 0, getIndices());
 	}
 	

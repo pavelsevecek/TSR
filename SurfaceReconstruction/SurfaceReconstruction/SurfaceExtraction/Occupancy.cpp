@@ -87,6 +87,8 @@ Occupancy::Occupancy(const Tree *tree) :
 
 	const uint32 leafCount = tree->getLeaves().getCount();	
 	const uint32 nodeCount = tree->getNodes().getCount();
+    cout << "left count = " << leafCount << endl;
+    cout << "node count = " << nodeCount << endl;
 	
 	// allocate memory
 	// for cone lengths & kernel sums
@@ -572,6 +574,8 @@ Real Occupancy::getOccupancy(const uint32 leafIdx) const
 	// uncertain?
 	const Real &emptiness = mKernelSums[EMPTINESS][leafIdx];
 	const Real &sampleness = mKernelSums[SAMPLENESS][leafIdx];
+
+    //std::cout << "sampleness = " << sampleness << std::endl;
 	if (isUnreliable(emptiness, sampleness))
 		return -EPSILON;
 
