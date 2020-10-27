@@ -24,6 +24,7 @@ set(cmakeFiles
 # header files
 set(headerFiles
 	${componentPath}/TSR.h
+        ${componentPath}/KdTree.hpp
 )
 
 # source files

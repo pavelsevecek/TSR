@@ -215,7 +215,7 @@ namespace SurfaceReconstruction
 	}
 
 	inline bool Occupancy::isUnreliable(const Real summedEmptinessKernels, const Real summedSamplenessKernels) const
-	{
+	{        
 		return (summedEmptinessKernels + summedSamplenessKernels) < mConfidenceThreshold;
 	}
 	

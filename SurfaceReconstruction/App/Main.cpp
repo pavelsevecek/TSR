@@ -14,15 +14,19 @@
 #include "SurfaceReconstruction/SurfaceExtraction/Occupancy.h"
 #include "Platform/Utilities/ParametersManager.h"
 
+#include "KdTree.hpp"
+
 #include <fstream>
 #include <sstream>
 
 using namespace Platform;
 
 void loadPly(const std::string& filename,
+             int stride,
              std::vector<Math::Vector3>& points,
              std::vector<Math::Vector3>& normals,
              std::vector<Math::Vector3>& sensors) {
+    std::size_t current = points.size();
     std::ifstream f(filename);
     if (!f.good()) {
         throw std::runtime_error("Can't open " + filename);
@@ -51,21 +55,22 @@ void loadPly(const std::string& filename,
         std::getline(f, line);
         std::stringstream ss(line);
         ss >> x >> y >> z >> nx >> ny >> nz >> sx >> sy >> sz;
-        if (i % 3 == 0) {
+        if (i % stride == 0) {
         points.emplace_back(x, y, z);
         normals.emplace_back(nx, ny, nz);
         sensors.emplace_back(sx, sy, sz);
         }
     }
-    std::cout << "Loaded point cloud with " << points.size() << " points"
+    std::cout << "Loaded point cloud with " << points.size() - current << " points"
               << std::endl;
 }
 
 int main(int argc, const char** arcv) {
     std::vector<Math::Vector3> points, normals, sensors;
-    loadPly("cloud.ply", points, normals, sensors);
+    loadPly("street.ply", 4,points, normals, sensors);
+    loadPly("aerial.ply", 1,points, normals, sensors);
 
-    Utilities::ParametersManager mgr("/home/pavel/projects/TSR/SurfaceReconstruction/WorkingDirectory/Data/App.cfg");
+    Utilities::ParametersManager mgr("/home/pavel/projects/melown/TSR/SurfaceReconstruction/WorkingDirectory/Data/App.cfg");
 
     SurfaceReconstruction::Scene scene({});
 
@@ -99,7 +104,27 @@ int main(int argc, const char** arcv) {
                           distort);
     }
 
+    std::cout << "Building a tree" << std::endl;
     std::vector<float> scales(points.size());
+    std::vector<Pvl::Vec3f> pvl;
+    for (std::uint32_t i = 0; i < points.size(); ++i) {
+        pvl.emplace_back(points[i].x, points[i].y, points[i].z);
+    }
+    Pvl::KdTree<Pvl::Vec3f> kdtree;
+    kdtree.build(pvl);
+
+    std::vector<int> neighs;
+    for (std::uint32_t i = 0; i < points.size(); ++i) {
+        float radius = 0.05;
+        do {
+            neighs.clear();
+            kdtree.rangeQuery(pvl[i], radius, std::back_inserter(neighs));
+            radius *= 1.2;
+        } while (neighs.size() < 5);
+        scales[i] = radius;
+    }
+
+
 
     samples.addSamples(normals, points, scales);
 
